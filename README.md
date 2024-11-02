@@ -13,8 +13,8 @@
 ## 🔗 Links
 <div align="center">
   <a href="https://readim.site/">Deployed website</a> |
-  <a href="https://github.com/team-sticky-252/readim-client">Frontend Repository</a> |
-  <a href="https://github.com/team-sticky-252/readim-server">Backend Repository</a>
+  <a href="https://github.com/Pangho04/readim-client">Frontend Repository</a> |
+  <a href="https://github.com/Pangho04/readim-server">Backend Repository</a>
 </div>
 
 ## 🗂️ Index
@@ -28,8 +28,8 @@
 - [**📈 Improvements**](#improvements)
   - [1. reading time UI 변경](#reading-time-ui-변경)
   - [2. 읽기 속도 기준](#2-읽기-속도-기준)
-  - [3. 에러 처리 구조화 및 응답 형식 표준화](#3-에러-처리-구조화-및-응답-형식-표준화)
-  - [4. 복수의 URL 병렬 요청 및 타임 아웃 처리](#4-복수의-url-병렬-요청-및-타임-아웃-처리)
+  - [3. 복수의 URL 병렬 요청 및 타임 아웃 처리](#3-복수의-url-병렬-요청-및-타임-아웃-처리)
+  - [4. AWS 서버 메모리 부족 현상 대응](#4-aws-서버-메모리-부족-현상-대응)
 - [**🎯 Challenges**](#-challenges)
   - [**1. 어떻게 단일 테스트로 다양한 사용자들의 읽기속도를 특정할 수 있을까?**](#1-어떻게-단일-테스트로-다양한-사용자들의-읽기속도를-특정할-수-있을까)
     - [1-1. 기준과 근거를 가진 기본 평균 범위 설정](#1-1--기준과-근거를-가진-기본-평균-범위-설정)
@@ -387,69 +387,20 @@ JSDOM은 Puppeteer에 비해 상당히 빠른 처리 속도를 제공합니다. 
 
 <br />
 
-### 3. 에러 처리 구조화 및 응답 형식 표준화
-
-기존 코드의 에러 처리 로직과 응답 로직에는 다음과 같은 문제들이 있었습니다.
-
-- Service 단에서 에러를 발생시키면 Controller 단에서 try-catch 블록을 통해 직접 에러 처리를 구현했습니다.
-- 이로 인해 Controller 단에 필수적인 로직 외에 불필요한 로직이 혼재하게 되었습니다.
-- 또한 응답 데이터의 구조를 직접 선언하여 반환했기 때문에 실수의 가능성이 존재했습니다.
-
-따라서 이러한 문제점을 개선하고자 NestJS의 기능을 이용해 에러 처리를 구조화하고 응답 형식을 표준화했습니다.
-
-<img src="./github/aop_flow.png" width="600" />
-
-#### 3-1. AOP(Aspect-Oriented Programming) 적용
-
-예외 처리와 응답 변환 로직을 핵심 비즈니스 로직에서 분리하기 위해 AOP 개념을 적용했습니다.
-
-> [!Note]
-> **AOP (Aspect-Oriented Programming)**  
-> AOP는 애플리케이션의 여러 부분에 걸쳐 나타나는 공통 기능(횡단 관심사)을 분리하여 모듈화하는 프로그래밍 패러다임입니다.  
-> 주요 목적은 다음과 같습니다.
->
-> - 코드 중복 감소
-> - 비즈니스 로직과 부가 기능의 명확한 분리
-> - 유지보수성 및 재사용성 향상
-
-#### 3-2. 전역 예외 필터(ExceptionFilter) 구현
-
-모든 예외를 일관되게 처리하기 위해 NestJS의 ExceptionFilter를 구현했습니다.  
-이 필터는 애플리케이션 전체에서 발생하는 예외를 표준화된 형식으로 변환합니다.
-
-- 모든 예외에 대해 일관된 응답 구조를 제공합니다.
-- HTTP 상태 코드가 자동 매핑됩니다.
-
-#### 3-3. 응답 변환 인터셉터(TransformInterceptor) 구현
-
-성공적인 응답도 일관된 형식으로 제공하기 위해 TransformInterceptor를 구현했습니다.
-
-- 모든 성공 응답을 통일화합니다.
-- 컨트롤러에서 반환된 데이터가 data 필드에 래핑 됩니다.
-- HTTP OK 상태 코드가 자동으로 포함됩니다.
-
-<br />
-
-에러 처리 로직을 전역 필터로 이동함으로써 각 컨트롤러에서 반복되던 try-catch 블록과 조건문을 제거했습니다. 이를 통해 코드의 일관성과 유지보수성이 향상됐습니다.
-또한 새로운 엔드포인트가 추가될 경우 발생할 수 있는 실수를 방지할 수 있게 되었으며, 비즈니스 로직과 에러 처리 로직의 명확한 분리로 각 부분의 책임이 더욱 명확해졌습니다.
-
-<br />
-
-<h3>4. 복수의 URL 병렬 요청 및 타임 아웃 처리</h3>
+<h3>3. 복수의 URL 병렬 요청 및 타임 아웃 처리</h3>
 
 #### <기존안>
-**`Promise.all` 사용**
+**`forEach` + `aync`/`await` 사용**
 
-<img height="80" src="https://github.com/user-attachments/assets/20bb245d-d5cc-40cc-8218-f9789abff592">
+<img height="100" src="https://github.com/user-attachments/assets/1ad09345-c6a3-4ebf-91df-00cba88f76b9">
 
-- Promise.all의 경우, 모든 URL요청의 응답이 도착을 기다린 후 사용자에게 결과를 표시합니다.</br>
-  하지만, 이 경우 요청한 URL 중 유효하지 않은 URL이 포함된 경우, 모든 URL이 `catch`구문으로 넘어가 전체가 실패한 것으로 처리됩니다.</br>
-  또한, URL을 개별적으로 대응할 수 없으므로 응답이 없는 URL과 같은 Edge Case에 대응할 수 없습니다.</br>
+- 사용자가 입력한 복수의 URL의 응답을 입력 순서대로 표시하기 위해 `forEach` + `async`/`await`을 사용하여 요청했습니다.</br>
+  하지만, 사용자 URL 입력 순서가 큰 의미를 가지지 않으며, 응답 속도의 개선이 사용자 경험에 더 큰 의미를 준다고 깨달아 개선의 필요성을 느꼈습니다.</br>
 
 #### <개선안>
 **`Promise.allSettled` 사용**
 
-<img height="80" src="https://github.com/user-attachments/assets/c5dbb675-f54f-4317-84d8-af5ed6b9b38f">
+<img height="100" src="https://github.com/user-attachments/assets/c5dbb675-f54f-4317-84d8-af5ed6b9b38f">
 
 - 위와 같은 문제점을 해결하기 위해 `Promise.allSettled`를 사용하여 비동기 요청을 병렬로 수행하며, 각 응답 결과를 조회 가능한 방식을 적용했습니다.</br>
   각 요청의 응답 결과를 배열로 반환하기 때문에, 각 케이스에 개별로 대응할 수 있습니다.</br>
@@ -457,6 +408,41 @@ JSDOM은 Puppeteer에 비해 상당히 빠른 처리 속도를 제공합니다. 
   결과적으로 사용자는 요청에 대한 즉각적인 피드백을 받을 수 있어, 전반적인 사용자 경험이 개선되었습니다.
 
 </br>
+
+<h3>4. AWS 서버 메모리 부족 현상 대응</h3>
+
+#### <문제점>
+**메모리 부족으로 인한 서버 다운**
+
+상대적 스코어링 본문 추출 로직 추가로 인해, `puppeteer`를 사용하여 본문을 추출할 경우 서버가 다운되는 현상을 마주하게 됐습니다.
+
+이후 원인을 조사한 결과 `Headless Browser`를 통해 크롤링을 시도하며, 메모리를 과하게 점유하였기 때문으로 추론할 수 있었습니다.
+현재 사용중인 서버의 인스턴스는 가상 1 코어 CPU, 1GB RAM으로 굉장히 저사양의 인스턴스를 사용중이기 때문에 쉽게 RAM이 과하게 점유될 수 있었습니다.
+
+- **당시 서버 CPU, RAM 점유율**
+<img height="250" alt="server memory out" src="https://github.com/user-attachments/assets/f80ebfe5-3d46-4e92-b61d-5acd90259b12">
+
+이러한 현상을 해결하기위해 조사하던 중, `Swap Memory`를 통해 **가상 메모리**를 구현하여 해당 문제를 해결할 수 있음을 알게 됐습니다.
+
+- **`Swap Memory`란?**
+<img height="300" alt="swap memory" src="https://github.com/user-attachments/assets/47b15651-cd22-4c96-acd2-fd37b8c31640">
+
+- 가상 메모리를 구현하는 방법 중 하나, 물리적 메모리(RAM)이 부족할 때 추가적으로 메모리에 자원을 할당하기 위해 사용합니다.
+- 일반적으로 HDD나 SSD를 사용하며, RAM보다는 속도가 느립니다.
+
+**작동 원리**
+- RAM이 부족할 경우 사용되지 않는 `page`(메모리 단위)를 `Swap Memory`로 이동시킵니다.
+- 해당 `page`가 다시 필요할 경우, `Swap Memory`에서 RAM으로 `page`를 로드합니다.
+
+#### <해결안>
+**`SSH`를 통해 `Swap Memory` 할당**
+
+`SSH`를 통해 EC2 인스턴스에 접속한 후, `swapfile`생성 등 일련의 과정을 수행하여 `Swap Memory`로 2GB의 가상 메모리를 할당한 결과 메모리 점유에 여유가 생겨 서버가 다운되는 현상을 해결할 수 있었습니다.
+
+- **`Swap Memory` 할당 후, `puppeteer`사용 시 메모리 사용량**
+<img height="500" alt="Server Memory" src="https://github.com/user-attachments/assets/913cfc1b-b1c2-45ae-8db0-ef27a3fec9b9">
+
+<br/>
 
 ## 🎯 Challenges
 
