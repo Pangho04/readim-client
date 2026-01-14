@@ -5,7 +5,7 @@ import Card from "./Card";
 function CardContainer({
   articleDataList,
   deleteArticle,
-  setArticleSummaryData,
+  // setArticleSummaryData,
   isSummaryClosed,
   setIsSummaryClosed,
 }) {
@@ -27,7 +27,7 @@ function CardContainer({
           mainContent={article.mainContent}
           url={article.url}
           deleteArticle={() => deleteArticle(article.id)}
-          setArticleSummaryData={setArticleSummaryData}
+          // setArticleSummaryData={setArticleSummaryData}
           isSummaryClosed={isSummaryClosed}
           setIsSummaryClosed={setIsSummaryClosed}
         />
@@ -51,7 +51,7 @@ CardContainer.propTypes = {
     }),
   ).isRequired,
   deleteArticle: PropTypes.func.isRequired,
-  setArticleSummaryData: PropTypes.func.isRequired,
+  // setArticleSummaryData: PropTypes.func.isRequired,
   isSummaryClosed: PropTypes.bool.isRequired,
   setIsSummaryClosed: PropTypes.func.isRequired,
 };

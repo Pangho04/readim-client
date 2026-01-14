@@ -6,22 +6,21 @@ import CardContainer from "./components/Card/CardContainer";
 import ToastContainer from "./components/Toast/ToastContainer";
 import Footer from "./components/Footer/Footer";
 import Welcome from "./components/Welcome";
-import SummaryContainer from "./components/Summary/SummaryContainer";
 
 import { DEFAULT_WPM } from "./utils/readTimeTest";
 
 function App() {
   const [messageList, setMessageList] = useState([]);
   const [articleDataList, setArticleDataList] = useState([]);
-  const [articleSummaryData, setArticleSummaryData] = useState({
-    id: "",
-    favicon: "",
-    domain: "",
-    articleTitle: "",
-    readingTime: 0,
-    mainContent: "",
-    url: "",
-  });
+  // const [articleSummaryData, setArticleSummaryData] = useState({
+  //   id: "",
+  //   favicon: "",
+  //   domain: "",
+  //   articleTitle: "",
+  //   readingTime: 0,
+  //   mainContent: "",
+  //   url: "",
+  // });
   const [isSummaryClosed, setIsSummaryClosed] = useState(true);
 
   const navigate = useNavigate();
@@ -73,11 +72,11 @@ function App() {
       <div className="flex justify-center h-auto min-h-full mb-auto">
         <div className="w-216 min-w-90 max-mobile:w-dvw max-mobile:flex max-mobile:flex-col max-mobile:justify-center max-mobile:p-5 max-mobile:pb-14">
           {articleDataList.length === 0 && <Welcome />}
-          <SummaryContainer
+          {/* <SummaryContainer
             articleSummaryData={articleSummaryData}
             isSummaryClosed={isSummaryClosed}
             setIsSummaryClosed={setIsSummaryClosed}
-          />
+          /> */}
           <HeaderContainer
             articleDataList={articleDataList}
             setArticleDataList={setArticleDataList}
@@ -85,7 +84,7 @@ function App() {
           />
           <CardContainer
             articleDataList={articleDataList}
-            setArticleSummaryData={setArticleSummaryData}
+            // setArticleSummaryData={setArticleSummaryData}
             deleteArticle={deleteArticle}
             isSummaryClosed={isSummaryClosed}
             setIsSummaryClosed={setIsSummaryClosed}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FiMinus } from "react-icons/fi";
-import { SiOpenai } from "react-icons/si";
+// import { SiOpenai } from "react-icons/si";
 import PropTypes from "prop-types";
 
 import GradientPatchCheckIcon from "../shared/GradientPatchCheckIcon";
@@ -8,17 +8,17 @@ import ReadingTime from "./ReadingTime";
 import IconButton from "../shared/Button/IconButton";
 
 function Card({
-  id,
+  // id,
   favicon = "/readimFavicon.png",
   domain,
   articleTitle,
   readingTime,
-  mainContent,
+  // mainContent,
   url,
   deleteArticle,
-  setArticleSummaryData,
-  isSummaryClosed,
-  setIsSummaryClosed,
+  // setArticleSummaryData,
+  // isSummaryClosed,
+  // setIsSummaryClosed,
 }) {
   const [isDeleted, setIsDeleted] = useState();
 
@@ -46,27 +46,27 @@ function Card({
     }, 500);
   };
 
-  const setArticleSummary = () => {
-    setIsSummaryClosed(false);
-    setArticleSummaryData({
-      id,
-      favicon,
-      domain,
-      articleTitle,
-      readingTime,
-      mainContent,
-      url,
-    });
-  };
+  // const setArticleSummary = () => {
+  //   setIsSummaryClosed(false);
+  //   setArticleSummaryData({
+  //     id,
+  //     favicon,
+  //     domain,
+  //     articleTitle,
+  //     readingTime,
+  //     mainContent,
+  //     url,
+  //   });
+  // };
 
-  const handleShowSummaryClick = () => {
-    if (!isSummaryClosed) {
-      setIsSummaryClosed(true);
+  // const handleShowSummaryClick = () => {
+  //   if (!isSummaryClosed) {
+  //     setIsSummaryClosed(true);
 
-      setTimeout(setArticleSummary, 500);
-    }
-    setArticleSummary();
-  };
+  //     setTimeout(setArticleSummary, 500);
+  //   }
+  //   setArticleSummary();
+  // };
 
   return (
     <li
@@ -102,14 +102,14 @@ function Card({
           {articleTitle}
         </p>
       </a>
-      <button
+      {/* <button
         aria-label="openAI-summary"
         data-hover="본문 요약"
         className="absolute p-1 hover-text bottom-4 right-4 text-gray hover:text-black hover:bg-medium-gray hover:rounded-lg"
         onClick={handleShowSummaryClick}
       >
         <SiOpenai />
-      </button>
+      </button> */}
       <IconButton
         className="hidden group-hover:block"
         onClick={handleClick}
@@ -124,15 +124,15 @@ function Card({
 export default Card;
 
 Card.propTypes = {
-  id: PropTypes.string.isRequired,
-  favicon: PropTypes.string,
+  // id: PropTypes.string.isRequired,
+  favicon: PropTypes.string.isRequired,
   domain: PropTypes.string.isRequired,
   articleTitle: PropTypes.string.isRequired,
   readingTime: PropTypes.number.isRequired,
-  mainContent: PropTypes.string.isRequired,
+  // mainContent: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
   deleteArticle: PropTypes.func.isRequired,
-  setArticleSummaryData: PropTypes.func.isRequired,
-  isSummaryClosed: PropTypes.bool.isRequired,
-  setIsSummaryClosed: PropTypes.func.isRequired,
+  // setArticleSummaryData: PropTypes.func.isRequired,
+  // isSummaryClosed: PropTypes.bool.isRequired,
+  // setIsSummaryClosed: PropTypes.func.isRequired,
 };
