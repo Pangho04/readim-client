@@ -24,6 +24,14 @@ function ReadingTime({ readingTime }) {
           <p className="inline-block ml-px text-base font-light">초</p>
         </>
       )}
+      {readingMinute <= 0 && readingSeconds <= 0 && (
+        <>
+          <h2 className="inline-block text-4xl font-medium tracking-tighter max-mobile:text-2xl">
+            {1}
+          </h2>
+          <p className="inline-block ml-px text-base font-light">초</p>
+        </>
+      )}
     </div>
   );
 }
